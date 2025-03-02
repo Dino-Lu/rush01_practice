@@ -6,7 +6,7 @@
 /*   By: moussade <moussade@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:33:32 by moussade          #+#    #+#             */
-/*   Updated: 2025/03/01 17:27:18 by moussade         ###   ########.fr       */
+/*   Updated: 2025/03/01 18:50:28 by moussade         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,37 @@ bool  isSafe(int grid[GRID_SIZE][GRID_SIZE], int row, int col, int height)
 	}
 	return true;
 }
+
+bool solveSkyscraper(int grid[GRID_SIZE][GRID_SIZE], int row, int col) 
+{
+	if (row == GRID_SIZE) 
+	{
+		return true;
+	}
+
+	int nextRow = (col == GRID_SIZE - 1) ? row + 1 : row;
+	int nextCol = (col == GRID_SIZE - 1) ? 0 : col + 1;
+
+	if (grid[row][col] != 0) 
+	{
+		return solveSkyscraper(grid, nextRow, nextCol);
+	}
+	
+	for (int height = 1; height <= GRID_SIZE; height++) 
+	{
+		if (isSafe(grid, row, col, height)) 
+		{  
+			grid[row][col] = height;
+			if (solveSkyscraper(grid, nextRow, nextCol)) 
+			{
+					return true;
+			}
+			grid[row][col] = 0;
+		}
+    }
+	return false;
+}
+
 
 int visibility_fx(int line[GRID_SIZE])
 {
@@ -76,7 +107,6 @@ int main()
 	printf("Test 1 (valid placement) : %d\n", isSafe(grid, 0, 1, 2));
 	printf("Test 2 (duplicate in a row) : %d\n", isSafe(grid, 0, 2, 1));
 	printf("Test 3 (duplicate in column) : %d\n", isSafe(grid, 2, 0, 1));
-	return (0);
 
 	int row1[GRID_SIZE] = {2, 3, 1, 4};
 	int row2[GRID_SIZE] = {1, 4, 3, 2};
@@ -86,5 +116,16 @@ int main()
 	printf("Visible buildings from the left (row2): %d\n", visibility_fx(row2));
 	// should print 2
 
-	return (0);
+    printf("\nSolving the puzzle...\n");
+    if (solveSkyscraper(grid, 0, 0)) 
+	{
+        printf("\nSolution Found:\n");
+        printGrid(grid); 
+    } 
+	else 
+	{
+        printf("No solution found.\n"); 
+    }
+
+    return 0; 
 }
